@@ -2,6 +2,12 @@
 #define CPUID_H
 #include <stdint.h>
 
-int get_cpuid();
+typedef struct
+{
+
+} cpuid_t;
+
+int get_cpuid(cpuid_t *str);
+
 
 #endif // CPUID_H

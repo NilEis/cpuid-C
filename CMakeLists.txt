@@ -5,4 +5,6 @@ add_subdirectory(cpuid)
 
 add_executable(CPUInfo main.c)
 
+include_directories(./cpuid)
+
 target_link_libraries(CPUInfo cpuid)
