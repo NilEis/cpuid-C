@@ -15,6 +15,7 @@ int main(int argc, char **argv)
     printf("Brand: %s\n", str.brand_str);
     cpuid_free_struct(&str);
     printf("Press Enter to exit...\n");
-    while(getchar()!='\n');
+    while (getchar() != '\n')
+        ;
     return 0;
 }

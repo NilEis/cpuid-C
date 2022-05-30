@@ -246,37 +246,32 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
             if (max_eax >= 0x80000002)
             {
                 __cpuid_call(0x80000002, &eax, &ebx, &ecx, &edx);
-                for (int j = 0; j < 4; j++)
-                {
-                    *(uint32_t *)ret->brand_str = eax;
-                    *(uint32_t *)(ret->brand_str + 4) = ebx;
-                    *(uint32_t *)(ret->brand_str + 8) = ecx;
-                    *(uint32_t *)(ret->brand_str + 12) = edx;
-                }
+                *(uint32_t *)ret->brand_str = eax;
+                *(uint32_t *)(ret->brand_str + 4) = ebx;
+                *(uint32_t *)(ret->brand_str + 8) = ecx;
+                *(uint32_t *)(ret->brand_str + 12) = edx;
                 (ret->brand_str)[16] = ' ';
             }
             if (max_eax >= 0x80000003)
             {
                 __cpuid_call(0x80000003, &eax, &ebx, &ecx, &edx);
-                for (int j = 0; j < 4; j++)
-                {
-                    *(uint32_t *)(ret->brand_str + 17) = eax;
-                    *(uint32_t *)(ret->brand_str + 21) = ebx;
-                    *(uint32_t *)(ret->brand_str + 25) = ecx;
-                    *(uint32_t *)(ret->brand_str + 29) = edx;
-                }
+
+                *(uint32_t *)(ret->brand_str + 17) = eax;
+                *(uint32_t *)(ret->brand_str + 21) = ebx;
+                *(uint32_t *)(ret->brand_str + 25) = ecx;
+                *(uint32_t *)(ret->brand_str + 29) = edx;
+
                 (ret->brand_str)[33] = ' ';
             }
             if (max_eax >= 0x80000004)
             {
                 __cpuid_call(0x80000004, &eax, &ebx, &ecx, &edx);
-                for (int j = 0; j < 4; j++)
-                {
-                    *(uint32_t *)(ret->brand_str + 34) = eax;
-                    *(uint32_t *)(ret->brand_str + 38) = ebx;
-                    *(uint32_t *)(ret->brand_str + 41) = ecx;
-                    *(uint32_t *)(ret->brand_str + 45) = edx;
-                }
+
+                *(uint32_t *)(ret->brand_str + 34) = eax;
+                *(uint32_t *)(ret->brand_str + 38) = ebx;
+                *(uint32_t *)(ret->brand_str + 41) = ecx;
+                *(uint32_t *)(ret->brand_str + 45) = edx;
+
                 (ret->brand_str)[49] = '\0';
             }
         }
