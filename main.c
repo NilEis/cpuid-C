@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include "cpu_id.h"
 
-int main(int argc, char **argv)
+int main(void)
 {
     cpuid_t str;
     cpuid_init_struct(&str);
