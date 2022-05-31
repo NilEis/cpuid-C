@@ -11,6 +11,8 @@
 
 static uint32_t hcp = 0;
 
+static char *amd_model = NULL;
+
 static void __cpuid_call(uint32_t p, uint32_t *ebx, uint32_t *edx, uint32_t *ecx, uint32_t *eax);
 
 static void __cpuid_get_intel();
@@ -32,6 +34,10 @@ void cpuid_init_struct(cpuid_t *str)
 
 void cpuid_free_struct(cpuid_t *str)
 {
+    if (amd_model != NULL)
+    {
+        free(amd_model);
+    }
     free(str->brand_str);
 }
 
@@ -138,6 +144,10 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
 {
     static char *Intel[] = {"Brand ID Not Supported.", "Intel(R) Celeron(R) processor", "Intel(R) Pentium(R) III processor", "Intel(R) Pentium(R) III Xeon(R) processor", "Intel(R) Pentium(R) III processor", "Reserved", "Mobile Intel(R) Pentium(R) III processor-M", "Mobile Intel(R) Celeron(R) processor", "Intel(R) Pentium(R) 4 processor", "Intel(R) Pentium(R) 4 processor", "Intel(R) Celeron(R) processor", "Intel(R) Xeon(R) Processor", "Intel(R) Xeon(R) processor MP", "Reserved", "Mobile Intel(R) Pentium(R) 4 processor-M", "Mobile Intel(R) Pentium(R) Celeron(R) processor", "Reserved", "Mobile Genuine Intel(R) processor", "Intel(R) Celeron(R) M processor", "Mobile Intel(R) Celeron(R) processor", "Intel(R) Celeron(R) processor", "Mobile Geniune Intel(R) processor", "Intel(R) Pentium(R) M processor", "Mobile Intel(R) Celeron(R) processor"};
     static char *Intel_Other[] = {"Reserved", "Reserved", "Reserved", "Intel(R) Celeron(R) processor", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Intel(R) Xeon(R) processor MP", "Reserved", "Reserved", "Intel(R) Xeon(R) processor", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved", "Reserved"};
+    uint32_t eax;
+    uint32_t ebx;
+    uint32_t ecx;
+    uint32_t edx;
     if (ret->manufacturer_id == cpuid_manufacturer_intel)
     {
         ret->manufacturer_str = "Intel";
@@ -236,10 +246,6 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
             break;
         }
         uint32_t max_eax = 0;
-        uint32_t eax;
-        uint32_t ebx;
-        uint32_t ecx;
-        uint32_t edx;
         __cpuid_call(0x80000000, &max_eax, NULL, NULL, NULL);
         if (max_eax >= 0x80000004)
         {
@@ -294,6 +300,94 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
     else
     {
         ret->manufacturer_str = "AMD";
+        amd_model = (char *)calloc(32, sizeof(char));
+        printf("fam_id %" PRIu32 "\n", ret->family_id);
+        switch (ret->family_id)
+        {
+        case 4:
+            ret->family_str = "486 Model";
+            sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+            break;
+        case 5:
+            switch (ret->model_id)
+            {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 6:
+            case 7:
+                ret->family_str = "K6";
+                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                break;
+            case 8:
+                ret->family_str = "K6-2";
+                sprintf_s(amd_model, 32, "%" PRIu32, 8);
+                break;
+            case 9:
+                sprintf_s(amd_model, 32, "%" PRIu32, 9);
+                ret->family_str = "K6-III";
+                break;
+            default:
+                ret->family_str = "K5/K6";
+                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                break;
+            }
+            break;
+        case 6:
+            switch (ret->model_id)
+            {
+            case 1:
+            case 2:
+            case 4:
+                ret->family_str = "Athlon Model";
+                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                break;
+            case 3:
+                ret->family_str = "Duron";
+                sprintf_s(amd_model, 32, "%" PRIu32, 3);
+                break;
+            case 6:
+                ret->family_str = "Athlon MP/Mobile Athlon";
+                sprintf_s(amd_model, 32, "%" PRIu32, 6);
+                break;
+            case 7:
+                ret->family_str = "Mobile Duron";
+                sprintf_s(amd_model, 32, "%" PRIu32, 7);
+                break;
+            default:
+                ret->family_str = "Duron/Athlon";
+                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                break;
+            }
+            break;
+        }
+        ret->model_str = amd_model;
+        /*
+        cpuid(0x80000000, eax, NULL, NULL, NULL);
+        if (extended == 0)
+        {
+            return 0;
+        }
+        if (extended >= 0x80000002)
+        {
+            unsigned int j;
+            printf("Detected Processor Name: ");
+            for (j = 0x80000002; j <= 0x80000004; j++)
+            {
+                cpuid(j, eax, ebx, ecx, edx);
+                printregs(eax, ebx, ecx, edx);
+            }
+            printf("\n");
+        }
+        if (extended >= 0x80000007)
+        {
+            cpuid(0x80000007, NULL, NULL, NULL, edx);
+            if (edx & 1)
+            {
+                printf("Temperature Sensing Diode Detected!\n");
+            }
+        }*/
     }
     return 0;
 }
