@@ -43,8 +43,72 @@ void cpuid_free_struct(cpuid_t *str)
 
 int cpuid_get_info(cpuid_t *str)
 {
+    uint32_t ecx;
+    uint32_t edx;
+    cpuid_get_features(&ecx, &edx);
     cpuid_get_name(str->name, &(str->highest_basic_calling_parameter));
-    cpuid_get_processor_info_and_features(str);
+    cpuid_get_processor_info(str);
+    str->sse3 /*         */ = ((ecx & cpuid_feature_ecx_sse3) /*         */ != 0);
+    str->pclmulqdq /*    */ = ((ecx & cpuid_feature_ecx_pclmulqdq) /*    */ != 0);
+    str->dtes64 /*       */ = ((ecx & cpuid_feature_ecx_dtes64) /*       */ != 0);
+    str->monitor /*      */ = ((ecx & cpuid_feature_ecx_monitor) /*      */ != 0);
+    str->ds_cpl /*       */ = ((ecx & cpuid_feature_ecx_ds_cpl) /*       */ != 0);
+    str->vmx /*          */ = ((ecx & cpuid_feature_ecx_vmx) /*          */ != 0);
+    str->smx /*          */ = ((ecx & cpuid_feature_ecx_smx) /*          */ != 0);
+    str->est /*          */ = ((ecx & cpuid_feature_ecx_est) /*          */ != 0);
+    str->tm2 /*          */ = ((ecx & cpuid_feature_ecx_tm2) /*          */ != 0);
+    str->ssse3 /*        */ = ((ecx & cpuid_feature_ecx_ssse3) /*        */ != 0);
+    str->cnxt_id /*      */ = ((ecx & cpuid_feature_ecx_cnxt_id) /*      */ != 0);
+    str->sdbg /*         */ = ((ecx & cpuid_feature_ecx_sdbg) /*         */ != 0);
+    str->fma /*          */ = ((ecx & cpuid_feature_ecx_fma) /*          */ != 0);
+    str->cx16 /*         */ = ((ecx & cpuid_feature_ecx_cx16) /*         */ != 0);
+    str->xtpr /*         */ = ((ecx & cpuid_feature_ecx_xtpr) /*         */ != 0);
+    str->pdcm /*         */ = ((ecx & cpuid_feature_ecx_pdcm) /*         */ != 0);
+    str->pcid /*         */ = ((ecx & cpuid_feature_ecx_pcid) /*         */ != 0);
+    str->dca /*          */ = ((ecx & cpuid_feature_ecx_dca) /*          */ != 0);
+    str->sse4_1 /*       */ = ((ecx & cpuid_feature_ecx_sse4_1) /*       */ != 0);
+    str->sse4_2 /*       */ = ((ecx & cpuid_feature_ecx_sse4_2) /*       */ != 0);
+    str->x2apic /*       */ = ((ecx & cpuid_feature_ecx_x2apic) /*       */ != 0);
+    str->movbe /*        */ = ((ecx & cpuid_feature_ecx_movbe) /*        */ != 0);
+    str->popcnt /*       */ = ((ecx & cpuid_feature_ecx_popcnt) /*       */ != 0);
+    str->tsc_deadline /* */ = ((ecx & cpuid_feature_ecx_tsc_deadline) /* */ != 0);
+    str->aes /*          */ = ((ecx & cpuid_feature_ecx_aes) /*          */ != 0);
+    str->xsave /*        */ = ((ecx & cpuid_feature_ecx_xsave) /*        */ != 0);
+    str->osxsave /*      */ = ((ecx & cpuid_feature_ecx_osxsave) /*      */ != 0);
+    str->avx /*          */ = ((ecx & cpuid_feature_ecx_avx) /*          */ != 0);
+    str->f16c /*         */ = ((ecx & cpuid_feature_ecx_f16c) /*         */ != 0);
+    str->rdrnd /*        */ = ((ecx & cpuid_feature_ecx_rdrnd) /*        */ != 0);
+    str->hypervisor /*   */ = ((ecx & cpuid_feature_ecx_hypervisor) /*   */ != 0);
+    str->fpu /*          */ = ((edx & cpuid_feature_edx_fpu) /*          */ != 0);
+    str->vme /*          */ = ((edx & cpuid_feature_edx_vme) /*          */ != 0);
+    str->de /*           */ = ((edx & cpuid_feature_edx_de) /*           */ != 0);
+    str->pse /*          */ = ((edx & cpuid_feature_edx_pse) /*          */ != 0);
+    str->tsc /*          */ = ((edx & cpuid_feature_edx_tsc) /*          */ != 0);
+    str->msr /*          */ = ((edx & cpuid_feature_edx_msr) /*          */ != 0);
+    str->pae /*          */ = ((edx & cpuid_feature_edx_pae) /*          */ != 0);
+    str->mce /*          */ = ((edx & cpuid_feature_edx_mce) /*          */ != 0);
+    str->cx8 /*          */ = ((edx & cpuid_feature_edx_cx8) /*          */ != 0);
+    str->apic /*         */ = ((edx & cpuid_feature_edx_apic) /*         */ != 0);
+    str->sep /*          */ = ((edx & cpuid_feature_edx_sep) /*          */ != 0);
+    str->mtrr /*         */ = ((edx & cpuid_feature_edx_mtrr) /*         */ != 0);
+    str->pge /*          */ = ((edx & cpuid_feature_edx_pge) /*          */ != 0);
+    str->mca /*          */ = ((edx & cpuid_feature_edx_mca) /*          */ != 0);
+    str->cmov /*         */ = ((edx & cpuid_feature_edx_cmov) /*         */ != 0);
+    str->pat /*          */ = ((edx & cpuid_feature_edx_pat) /*          */ != 0);
+    str->pse_36 /*       */ = ((edx & cpuid_feature_edx_pse_36) /*       */ != 0);
+    str->psn /*          */ = ((edx & cpuid_feature_edx_psn) /*          */ != 0);
+    str->clfsh /*        */ = ((edx & cpuid_feature_edx_clfsh) /*        */ != 0);
+    str->ds /*           */ = ((edx & cpuid_feature_edx_ds) /*           */ != 0);
+    str->acpi /*         */ = ((edx & cpuid_feature_edx_acpi) /*         */ != 0);
+    str->mmx /*          */ = ((edx & cpuid_feature_edx_mmx) /*          */ != 0);
+    str->fxsr /*         */ = ((edx & cpuid_feature_edx_fxsr) /*         */ != 0);
+    str->sse /*          */ = ((edx & cpuid_feature_edx_sse) /*          */ != 0);
+    str->sse2 /*         */ = ((edx & cpuid_feature_edx_sse2) /*         */ != 0);
+    str->ss /*           */ = ((edx & cpuid_feature_edx_ss) /*           */ != 0);
+    str->htt /*          */ = ((edx & cpuid_feature_edx_htt) /*          */ != 0);
+    str->tm /*           */ = ((edx & cpuid_feature_edx_tm) /*           */ != 0);
+    str->ia64 /*         */ = ((edx & cpuid_feature_edx_ia64) /*         */ != 0);
+    str->pbe /*          */ = ((edx & cpuid_feature_edx_pbe) /*          */ != 0);
 }
 
 char *cpuid_get_name(char str[13], uint32_t *ret)
@@ -66,7 +130,7 @@ char *cpuid_get_name(char str[13], uint32_t *ret)
     return (char *)str;
 }
 
-int cpuid_get_processor_info_and_features(cpuid_t *ret)
+int cpuid_get_processor_info(cpuid_t *ret)
 {
     uint32_t ebx;
     uint32_t edx;
@@ -396,4 +460,9 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
         }
     }
     return 0;
+}
+
+void cpuid_get_features(uint32_t *ecx, uint32_t *edx)
+{
+    __cpuid_call(1, NULL, NULL, ecx, edx);
 }
