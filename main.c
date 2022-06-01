@@ -5,6 +5,9 @@
 int main(void)
 {
     cpuid_t str;
+    printf("Compiled on "__DATE__ " at "__TIME__
+           " with gcc-version "__VERSION__
+           "\n");
     cpuid_init_struct(&str);
     cpuid_get_info(&str);
     printf("%s\nHighest basic calling parameter: %" PRIu32 " -> 0x%" PRIx32 "\n", str.name, str.highest_basic_calling_parameter, str.highest_basic_calling_parameter);

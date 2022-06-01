@@ -301,12 +301,11 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
     {
         ret->manufacturer_str = "AMD";
         amd_model = (char *)calloc(32, sizeof(char));
-        printf("fam_id %" PRIu32 "\n", ret->family_id);
         switch (ret->family_id)
         {
         case 4:
             ret->family_str = "486 Model";
-            sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+            sprintf(amd_model, "%" PRIu32, ret->model_id);
             break;
         case 5:
             switch (ret->model_id)
@@ -318,19 +317,19 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
             case 6:
             case 7:
                 ret->family_str = "K6";
-                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                sprintf(amd_model, "%" PRIu32, ret->model_id);
                 break;
             case 8:
                 ret->family_str = "K6-2";
-                sprintf_s(amd_model, 32, "%" PRIu32, 8);
+                sprintf(amd_model, "%" PRIu32, 8);
                 break;
             case 9:
-                sprintf_s(amd_model, 32, "%" PRIu32, 9);
+                sprintf(amd_model, "%" PRIu32, 9);
                 ret->family_str = "K6-III";
                 break;
             default:
                 ret->family_str = "K5/K6";
-                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                sprintf(amd_model, "%" PRIu32, ret->model_id);
                 break;
             }
             break;
@@ -341,53 +340,60 @@ int cpuid_get_family_and_model_str(cpuid_t *ret, uint32_t signature)
             case 2:
             case 4:
                 ret->family_str = "Athlon Model";
-                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                sprintf(amd_model, "%" PRIu32, ret->model_id);
                 break;
             case 3:
                 ret->family_str = "Duron";
-                sprintf_s(amd_model, 32, "%" PRIu32, 3);
+                sprintf(amd_model, "%" PRIu32, 3);
                 break;
             case 6:
                 ret->family_str = "Athlon MP/Mobile Athlon";
-                sprintf_s(amd_model, 32, "%" PRIu32, 6);
+                sprintf(amd_model, "%" PRIu32, 6);
                 break;
             case 7:
                 ret->family_str = "Mobile Duron";
-                sprintf_s(amd_model, 32, "%" PRIu32, 7);
+                sprintf(amd_model, "%" PRIu32, 7);
                 break;
             default:
                 ret->family_str = "Duron/Athlon";
-                sprintf_s(amd_model, 32, "%" PRIu32, ret->model_id);
+                sprintf(amd_model, "%" PRIu32, ret->model_id);
                 break;
             }
             break;
         }
         ret->model_str = amd_model;
-        /*
-        cpuid(0x80000000, eax, NULL, NULL, NULL);
-        if (extended == 0)
+        __cpuid_call(0x80000000, &eax, NULL, NULL, NULL);
+        if (eax == 0)
         {
             return 0;
         }
-        if (extended >= 0x80000002)
+        if (eax >= 0x80000002)
         {
-            unsigned int j;
-            printf("Detected Processor Name: ");
-            for (j = 0x80000002; j <= 0x80000004; j++)
-            {
-                cpuid(j, eax, ebx, ecx, edx);
-                printregs(eax, ebx, ecx, edx);
-            }
-            printf("\n");
+            __cpuid_call(0x80000002, &eax, &ebx, &ecx, &edx);
+            *(uint32_t *)ret->brand_str = eax;
+            *(uint32_t *)(ret->brand_str + 4) = ebx;
+            *(uint32_t *)(ret->brand_str + 8) = ecx;
+            *(uint32_t *)(ret->brand_str + 12) = edx;
+            __cpuid_call(0x80000003, &eax, &ebx, &ecx, &edx);
+            *(uint32_t *)(ret->brand_str + 16) = eax;
+            *(uint32_t *)(ret->brand_str + 20) = ebx;
+            *(uint32_t *)(ret->brand_str + 24) = ecx;
+            *(uint32_t *)(ret->brand_str + 28) = edx;
+            __cpuid_call(0x80000004, &eax, &ebx, &ecx, &edx);
+            *(uint32_t *)(ret->brand_str + 33) = eax;
+            *(uint32_t *)(ret->brand_str + 37) = ebx;
+            *(uint32_t *)(ret->brand_str + 40) = ecx;
+            *(uint32_t *)(ret->brand_str + 44) = edx;
+            (ret->brand_str)[49] = '\0';
         }
-        if (extended >= 0x80000007)
+        if (eax >= 0x80000007)
         {
-            cpuid(0x80000007, NULL, NULL, NULL, edx);
+            __cpuid_call(0x80000007, NULL, NULL, NULL, &edx);
             if (edx & 1)
             {
                 printf("Temperature Sensing Diode Detected!\n");
             }
-        }*/
+        }
     }
     return 0;
 }
